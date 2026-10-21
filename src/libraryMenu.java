@@ -270,19 +270,19 @@ public class libraryMenu {
 
                                         if (newReadingStatus.equalsIgnoreCase("To Be Read") || newReadingStatus.equalsIgnoreCase("TBR")) {
                                             updatingBook.setReadingStatus("TBR");
-                                            validReadingStatus = true;
+                                            validNewReadingStatus= true;
 
                                         } else if (newReadingStatus.equalsIgnoreCase("Currently Reading")) {
                                             updatingBook.setReadingStatus("Currently Reading");
-                                            validReadingStatus = true;
+                                            validNewReadingStatus= true;
 
                                         } else if (newReadingStatus.equalsIgnoreCase("Finished Reading")) {
                                             updatingBook.setReadingStatus("Finished Reading");
-                                            validReadingStatus = true;
+                                            validNewReadingStatus= true;
 
                                         } else if (newReadingStatus.equalsIgnoreCase("Did Not Finish") || newReadingStatus.equalsIgnoreCase("DNF")) {
                                             updatingBook.setReadingStatus("DNF");
-                                            validReadingStatus = true;
+                                            validNewReadingStatus= true;
 
                                         } else {
                                             System.out.println("Please enter a valid reading status.");

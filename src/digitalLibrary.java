@@ -127,7 +127,8 @@ public class digitalLibrary {
                     ", written by " + book.getAuthorFirstName() + " " + book.getAuthorLastName() +
                     " is a " + book.getBookGenre() + "/"+ book.getBookSubGenre() + " novel" +
                     ", it has a book rating of " + book.getBookRating() + "/5 Stars" +
-                    ", and the book summary:\n" + book.getBookSummary());
+                    ", and the book summary:\n" + book.getBookSummary() +
+                    "the reading status is: " + book.getReadingStatus() + "\n");
             count++;
         }
         return count;
