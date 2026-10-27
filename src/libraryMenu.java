@@ -26,7 +26,8 @@ public class libraryMenu {
 
     public static void main(String[] args) {
         libraryMenu menu = new libraryMenu();
-        digitalLibrary library = new digitalLibrary(); // links to digitalLibrary class to view the digital library
+        // links to digitalLibrary class to view the digital library
+        digitalLibrary library = new digitalLibrary();
 
 // scanner for user input
         Scanner userInput = new Scanner(System.in);
@@ -46,12 +47,12 @@ public class libraryMenu {
             userInput.nextLine();
 
             if (userDecision >= 2 && userDecision <= 7 && library.getActiveLibraryFile().isBlank()) {
-                System.out.println(flair.BOLD_RED + "\nPlease select menu option [1] to load a digital library or create a new one!" + flair.RESET + "\n");
+                System.out.println(flair.BOLD_RED + "\nPlease select menu option [1] to load a digital library or create a new one!\n" + flair.RESET);
                 continue;
             }
 
             switch (userDecision) {
-                // main menu option 1 creating a new digital library
+                // main menu option 1 creating a new digital library OR loading a digital library
                 case 1:
                     System.out.print("\n-*-*- Create a New Digital Library or Load a Digital Library -*-*-\n");
                     int totalLibraries = library.displayLibraries();
@@ -64,7 +65,11 @@ public class libraryMenu {
                         break;
                     }
 
-                    // --- SECURITY CHECK: Process workspace validation immediately after variable input ---
+                    if (!libraryName.endsWith(".txt")) {
+                        libraryName = libraryName + ".txt";
+                    }
+
+                    // validating user input if the digital library already exists
                     String checkLibraryName = libraryName;
                     if (!checkLibraryName.endsWith(".txt")) {
                         checkLibraryName = checkLibraryName + ".txt";
@@ -80,27 +85,22 @@ public class libraryMenu {
                         for (java.io.File file : existingFiles) {
                             if (file.getName().equalsIgnoreCase(checkLibraryName)) {
                                 duplicateFound = true;
-                                matchedExistingName = file.getName(); // Stores exact original casing found on disk
+                                matchedExistingName = file.getName();
                                 break;
                             }
                         }
                     }
 
-                    // FIXED INTERCEPTION FLOW: If it already physically exists, handle it here immediately!
+                    // if it already exists simply output the file name and load it
                     if (duplicateFound) {
-                        // 1. Force your active tracking parameter to match the exact physical file layout on your drive disk
+                        // match file name to user input
                         libraryName = matchedExistingName;
                         library.loadBookShelfFromFile(libraryName);
-
-                        // 2. Output the exact confirmation message you requested
                         System.out.println("\nDigital library exists, loading " + flair.BOLD_PINK + libraryName.replace(".txt", "") + flair.RESET + "...\n");
-
-                        // 3. Kick them safely out of the case flow back to the main menu without creating duplicates
                         break;
                     }
-                    // -------------------------------------------------------------------------------------
 
-                    // This section only executes if the file is truly 100% brand new!
+                    // if an only if there is a new digital library being created
                     boolean digitalLibraryExists;
                     if (libraryName.endsWith(".txt")) {
                         digitalLibraryExists = library.loadBookShelfFromFile(libraryName);
@@ -108,7 +108,7 @@ public class libraryMenu {
                         digitalLibraryExists = library.loadBookShelfFromFile(libraryName + ".txt");
                     }
 
-                    // Initialize a brand-new physical file document onto your computer hard drive container space
+                    // initializing new digital library file
                     try {
                         String trueFileName = libraryName.endsWith(".txt") ? libraryName : libraryName + ".txt";
                         java.io.File blankFile = new java.io.File(System.getProperty("user.dir"), trueFileName);
@@ -128,7 +128,7 @@ public class libraryMenu {
 
                 // main menu option 2 adding a book
                 case 2:
-                    System.out.println("\n" + "-*-*- Adding a book to your digital library -*-*-");
+                    System.out.println("\n-*-*- Adding a book to your digital library -*-*-");
 
                     // getting the user input book title
                     System.out.println("Please enter the book title: ");
@@ -238,14 +238,14 @@ public class libraryMenu {
                             + "\n⊹ Book Summary: " + bookSummary
                             + "\n⊹ Book Rating: " + menu.starSymbols(bookRating) + "\n"
                     );
-                    // end of case 1
+                    // end of case 2
                     break;
 
                 // main menu option 3 updating book details
                 case 3:
                     System.out.println("\n-*-*- Update Book Details -*-*-");
                     if (library.ifShelfIsEmpty()) {
-                        System.out.println(flair.BOLD_RED + "There are no books currently in the library." + flair.RESET + "\n");
+                        System.out.println(flair.BOLD_RED + "There are no books currently in the library.\n" + flair.RESET);
                         break;
                     }
                     // list the books in the digital library so the user can see what they currently have
@@ -256,7 +256,7 @@ public class libraryMenu {
                     boolean lookupBook = true;
 
                     while (lookupBook) {
-                        System.out.println("\n" + "Please enter the 5-digit Book ID: ");
+                        System.out.println("\nPlease enter the 5-digit Book ID: ");
                         String bookIDInput = userInput.nextLine().trim();
 
                         if (bookIDInput.equals("0")) {
@@ -348,7 +348,7 @@ public class libraryMenu {
                                     break;
 
                                 case 6:
-                                    // Making sure the reading status is a valid 1-4 integer input
+                                    // making sure the reading status is a valid 1-4 integer input
                                     int newReadingStatusChoice = 0;
                                     boolean validNewReadingStatus = false;
 
@@ -447,22 +447,23 @@ public class libraryMenu {
                             }
                         }
                     }
+                    // end of case 3
                     break;
 
                 // main menu option 4 removing a book
                 case 4:
-                    System.out.println("\n" + "-*-*- Removing A Book -*-*-");
+                    System.out.println("\n-*-*- Removing A Book -*-*-");
 
                     if (library.ifShelfIsEmpty()) {
-                        System.out.println(flair.BOLD_RED + "There are no books currently in the library." + flair.RESET + "\n");
+                        System.out.println(flair.BOLD_RED + "There are no books currently in the library.\n" + flair.RESET);
                         break;
                     }
-                    // changing the removing a book option to a loop so that the user does not have to keep going back to the main menu to delete a new book.
+
                     boolean removeBookLoop = false;
                     while (!removeBookLoop) {
                         if (library.ifShelfIsEmpty()) {
                             // will return to the main menu
-                            System.out.println(flair.BOLD_RED + "There are no books currently in the library." + flair.RESET + "\n");
+                            System.out.println(flair.BOLD_RED + "There are no books currently in the library.\n" + flair.RESET);
                             break;
                         }
 
@@ -525,23 +526,23 @@ public class libraryMenu {
                             }
                         }
                     }
-                    // the end of case 3
+                    // the end of case 4
                     break;
 
                 // main menu option 5 viewing library
                 case 5:
-                    System.out.println("\n" + "-*-*- Viewing Your Digital Library -*-*-\n");
+                    System.out.println("\n-*-*- Viewing Your Digital Library -*-*-\n");
                     library.viewDigitalLibrary();
                     System.out.println();
-                    // end of case 4
+                    // end of case 5
                     break;
 
                 // main menu option 6 sorting library
                 case 6:
-                    System.out.println("\n" + "-*-*- Sorting Your Digital Library -*-*-");
+                    System.out.println("\n-*-*- Sorting Your Digital Library -*-*-");
 
                     if (library.ifShelfIsEmpty()) {
-                        System.out.println(flair.BOLD_RED + "There are no books currently in the library." + flair.RESET + "\n");
+                        System.out.println(flair.BOLD_RED + "There are no books currently in the library.\n" + flair.RESET);
                         break;
                     }
 
@@ -551,12 +552,16 @@ public class libraryMenu {
 
                     // prints out the organized digital library
                     library.viewDigitalLibrary();
+                    // end of case 6
                     break;
+
                 // main menu option 7 deleting digital library
                 case 7:
                     String openFile = library.getActiveLibraryFile();
+                    String displayLibraryName = openFile.replace(".txt", "");
 
-                    System.out.println(flair.BOLD_RED + "\nWARNING: You are about to permanently delete the library file '" + openFile + "'!" + flair.RESET);
+
+                    System.out.println(flair.BOLD_RED + "\nWARNING: " + flair.RESET + "You are about to permanently delete the library file '" + displayLibraryName + "'!");
                     System.out.print("Are you absolutely sure you want to delete it? Type 'YES' to confirm: ");
 
                     String userConfirmed = userInput.nextLine().trim();
@@ -566,8 +571,7 @@ public class libraryMenu {
                         try {
                             if (Files.deleteIfExists(filePath)) {
                                 library.deleteDigitalLibrary();
-                                // FIXED: Resets tracking string so option requirements lock up safely again
-                                libraryName = "";
+                                library.resetActiveLibrary();
                                 System.out.println("The library has been successfully deleted!\n");
                             } else {
                                 System.out.println(openFile.replace(".txt", "") + " could not be deleted, it does not exist.\n");
@@ -579,6 +583,7 @@ public class libraryMenu {
                 } else {
                         System.out.println("\nYes was not entered, deletion process has been canceled, returning to main menu!");
                     }
+                    // end of case 7
                     break;
 
                 // main menu option 8 exit
@@ -591,12 +596,14 @@ public class libraryMenu {
                     System.out.println("Please choose a menu option.");
                     break;
 
-            } // end of switch cases for main menu
+            }
+            // end of switch cases for main menu
 
-        } // end of mainMenuLoop
+        }
+        // end of mainMenuLoop
         userInput.close();
     }
-
+// ------------------------------------------------------------------------------------------ //
     // // converting book rating string to star symbols // //
     public String starSymbols(double bookRating) {
         if (bookRating == 0.0) {

@@ -16,6 +16,7 @@ public class digitalLibrary {
     }
 
     public int displayLibraries() {
+        // finding and listing digital library files using universal user.dir and searching user's directory
         String digitalLibraryPath = System.getProperty("user.dir");
         java.io.File dir = new java.io.File(System.getProperty("user.dir"));
         java.io.File[] existingFiles = dir.listFiles((d, name) -> name.endsWith(".txt"));
@@ -24,15 +25,14 @@ public class digitalLibrary {
             System.out.println("No libraries found");
             return 0;
         }
-
-            System.out.println("\n-*-*- Current Digital Library Archives -*-*-");
-            int count = 1;
+        // listing all digital library archives for user to view when loading or creating a new digital library through main menu option 1
+        System.out.println("\n-*-*- Current Digital Library Archives -*-*-");
+        int count = 1;
         for (java.io.File file : existingFiles) {
             String displayName = file.getName().replace(".txt", "");
 
-            // FIXED: Matches loaded state properly regardless of relative or absolute path conversions
             if (file.getName().equals(this.activeLibraryFile) || file.getAbsolutePath().equals(this.activeLibraryFile)) {
-                System.out.println("[" + count + "]" + " ⊹ " + displayName);
+                System.out.println("[" + count + "]" + " ⊹ " + displayName + " (Active Collection) ✦");
             } else {
                 System.out.println("[" + count + "]" + " ⊹ " + displayName);
             }
@@ -40,8 +40,6 @@ public class digitalLibrary {
         }
             return existingFiles.length;
         }
-
-
 
     // 5 digit int bookID, with a random number instead of leading with 10000
     public bookDetails addNewBook(bookDetails book) {
@@ -187,7 +185,8 @@ public class digitalLibrary {
         if (bookShelf.size() > 1) {
             bookShelf.sort((book1, book2) -> {
                 int compareAuthorLastName = book1.getAuthorLastName().compareToIgnoreCase(book2.getAuthorLastName());
-                // Fallback to last name if first names are identical
+
+                // fallback to sorting books by author first name if their last names are identical
                 if (compareAuthorLastName == 0) {
                     return book1.getAuthorFirstName().compareToIgnoreCase(book2.getAuthorFirstName());
                 }
@@ -203,8 +202,12 @@ public class digitalLibrary {
     public void deleteDigitalLibrary() {
         this.bookShelf.clear();
     }
-    // which is active
+    // which library is active
     public String getActiveLibraryFile() {
         return this.activeLibraryFile;
+    }
+    // reset active library
+    public void resetActiveLibrary() {
+        this.activeLibraryFile = "";
     }
 }
