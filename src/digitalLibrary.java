@@ -4,24 +4,62 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 public class digitalLibrary {
+    private String activeLibraryFile = "";
     private ArrayList<bookDetails> bookShelf;
-    private final String digitalShelf = "TRA.txt";
 
     public digitalLibrary() {
         bookShelf = new ArrayList<bookDetails>();
-        // loading book details from shelf (file)
-        loadBookShelfFromFile();
     }
 
-    // 5 digit int bookID
+    public int displayLibraries() {
+        String digitalLibraryPath = System.getProperty("user.dir");
+        java.io.File dir = new java.io.File(System.getProperty("user.dir"));
+        java.io.File[] existingFiles = dir.listFiles((d, name) -> name.endsWith(".txt"));
+
+        if (existingFiles ==  null || existingFiles.length == 0) {
+            System.out.println("No libraries found");
+            return 0;
+        }
+
+            System.out.println("\n-*-*- Current Digital Library Archives -*-*-");
+            int count = 1;
+        for (java.io.File file : existingFiles) {
+            String displayName = file.getName().replace(".txt", "");
+
+            // FIXED: Matches loaded state properly regardless of relative or absolute path conversions
+            if (file.getName().equals(this.activeLibraryFile) || file.getAbsolutePath().equals(this.activeLibraryFile)) {
+                System.out.println("[" + count + "]" + " ⊹ " + displayName);
+            } else {
+                System.out.println("[" + count + "]" + " ⊹ " + displayName);
+            }
+            count++;
+        }
+            return existingFiles.length;
+        }
+
+
+
+    // 5 digit int bookID, with a random number instead of leading with 10000
     public bookDetails addNewBook(bookDetails book) {
-        // only a 5 digit book idea with leading 10000
-        int uniqueBookID = 10000 + bookShelf.size();
-        book.setBookID(uniqueBookID);
+        int uniqueID = 0;
+        boolean isDuplicateID;
+
+        do {
+            uniqueID = ThreadLocalRandom.current().nextInt(10000, 100000);
+            isDuplicateID = false;
+            for (bookDetails currentBook : bookShelf) {
+                if (currentBook.getBookID() == uniqueID) {
+                    isDuplicateID = true;
+                    break;
+                }
+            }
+        } while (isDuplicateID);
+        book.setBookID(uniqueID);
         bookShelf.add(book);
-        // saving the new book details list to shelf (file)
         saveBookShelfToFile();
         return book;
     }
@@ -51,7 +89,13 @@ public class digitalLibrary {
 
     // each line in text file holds the book details information
     public boolean saveBookShelfToFile() {
-        try (BufferedWriter writer = new BufferedWriter (new FileWriter(digitalShelf))) {
+
+        if (activeLibraryFile == null || activeLibraryFile.isEmpty()) {
+            System.out.println("There is no active library file selected!\n");
+            return false;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter (new FileWriter(activeLibraryFile))) {
             for (bookDetails book : bookShelf) {
                 writer.write(
                         book.getBookID() + "|" +
@@ -73,15 +117,18 @@ public class digitalLibrary {
     }
 
     // adding a new book to the bookShelf
-    public boolean loadBookShelfFromFile() {
+    public boolean loadBookShelfFromFile(String fileName) {
+        this.bookShelf.clear();
+        this.activeLibraryFile = fileName;
+
         // to avoid the output There was an error writing to file, verify the file exists first then return nothing
-        java.io.File file = new java.io.File(digitalShelf);
-        // if file NOT exists
+        java.io.File file = new java.io.File(activeLibraryFile);
+
         if (!file.exists()) {
-            return false;
+            return true;
         }
 
-        try (BufferedReader reader = new BufferedReader (new FileReader(digitalShelf))) {
+        try (BufferedReader reader = new BufferedReader (new FileReader(activeLibraryFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split("\\|");
@@ -123,12 +170,13 @@ public class digitalLibrary {
         // will print out the book details like the title an author's name
         int count = 0;
         for (bookDetails book : bookShelf) {
-            System.out.println("Book ID: " + book.getBookID() + ", " + book.getBookTitle() +
-                    ", written by " + book.getAuthorFirstName() + " " + book.getAuthorLastName() +
-                    " is a " + book.getBookGenre() + "/"+ book.getBookSubGenre() + " novel" +
-                    ", it has a book rating of " + book.getBookRating() + "/5 Stars" +
-                    ", and the book summary:\n" + book.getBookSummary() +
-                    "the reading status is: " + book.getReadingStatus() + "\n");
+            System.out.println("⊹ Book ID: " + book.getBookID() +
+                    "\n⊹ Title: " + book.getBookTitle() +
+                    "\n⊹ Written by: " + book.getAuthorFirstName() + " " + book.getAuthorLastName() +
+                    "\n⊹ Genre and Subgenre:" + book.getBookGenre() + ", "+ book.getBookSubGenre() +
+                    "\n⊹ Star Rating: " + book.getBookRating() + " / 5 Stars" +
+                    "\n⊹ Reading Status: " + book.getReadingStatus() +
+                    "\n⊹ Summary: " + book.getBookSummary() + "\n");
             count++;
         }
         return count;
@@ -149,5 +197,14 @@ public class digitalLibrary {
             saveBookShelfToFile();
         }
         return bookShelf.size();
+    }
+
+    // deleting digital library
+    public void deleteDigitalLibrary() {
+        this.bookShelf.clear();
+    }
+    // which is active
+    public String getActiveLibraryFile() {
+        return this.activeLibraryFile;
     }
 }
