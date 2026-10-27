@@ -22,7 +22,7 @@ public class digitalLibrary {
         java.io.File[] existingFiles = dir.listFiles((d, name) -> name.endsWith(".txt"));
 
         if (existingFiles ==  null || existingFiles.length == 0) {
-            System.out.println("No libraries found");
+            System.out.println("\nNo libraries found");
             return 0;
         }
         // listing all digital library archives for user to view when loading or creating a new digital library through main menu option 1
