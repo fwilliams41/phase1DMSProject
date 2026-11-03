@@ -22,7 +22,7 @@ public class bookDetails {
         this.bookRating = bookRating;
     }
 // the setters and getters
-    // setter and gett for book ID
+    // setter and get for book ID
     public int getBookID() {
         return bookID;
     }

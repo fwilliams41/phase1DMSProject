@@ -10,7 +10,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class digitalLibrary {
     private String activeLibraryFile = "";
     private ArrayList<bookDetails> bookShelf;
-
+    public ArrayList<bookDetails> getBookShelf() {
+        return new ArrayList<>(bookShelf);
+    }
     public digitalLibrary() {
         bookShelf = new ArrayList<bookDetails>();
     }
@@ -171,7 +173,7 @@ public class digitalLibrary {
             System.out.println("⊹ Book ID: " + book.getBookID() +
                     "\n⊹ Title: " + book.getBookTitle() +
                     "\n⊹ Written by: " + book.getAuthorFirstName() + " " + book.getAuthorLastName() +
-                    "\n⊹ Genre and Subgenre:" + book.getBookGenre() + ", "+ book.getBookSubGenre() +
+                    "\n⊹ Genre and Subgenre: " + book.getBookGenre() + ", "+ book.getBookSubGenre() +
                     "\n⊹ Star Rating: " + book.getBookRating() + " / 5 Stars" +
                     "\n⊹ Reading Status: " + book.getReadingStatus() +
                     "\n⊹ Summary: " + book.getBookSummary() + "\n");

@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="phase2DMSProject:jar">
+    <output-path>$PROJECT_DIR$/../../artifacts/phase2DMSProject_jar</output-path>
+    <root id="archive" name="phase2DMSProject.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/../../phase2DMSProject/DMSProject/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="phase2DMSProject" />
+    </root>
+  </artifact>
+</component>

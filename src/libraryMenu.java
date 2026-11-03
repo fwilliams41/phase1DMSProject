@@ -219,7 +219,7 @@ public class libraryMenu {
                                     validBookRating = true;
 
                                 } else {
-                                    System.out.println("Please enter a rating from 0 stars to 5 stars.");
+                                    System.out.println("Please enter a book rating from 0 stars to 5 stars.");
                                 }
                             } catch (Exception e) {
                                 System.out.println(flair.BOLD_RED + "Please enter a valid book rating." + flair.RESET);
