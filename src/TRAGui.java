@@ -10,21 +10,20 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /*
  * Francine Williams
  * CEN 3024 - Software Development 1
  * November 9, 2026
  * TRAGui.java
- *
  * The Reader's Archive is a digital library manager. The user can create or open a library,
  * add, edit and remove books, sort the library by author's last name, and delete a library.
  * This class is the graphical (Swing) version of the program and contains the main method that
- * starts it.
- *
- * For Phase 4 of the DMS project, the libraries and books are kept in a MySQL database,
- * the user types in their own server address, username, and password when the program starts.
- * Books are chosen by clicking them in the table instead of typing their ID, and all updates appear in pop up windows.
+ * starts it. For Phase 4 the libraries and books are kept in a MySQL database (see
+ * libraryDatabase and the theReadersArchive database), the user types in their own server address, username
+ * and password when the program starts. Books are chosen by clicking them in the table instead
+ * of typing their ID, and all updates appear in pop ups.
  */
 
 public class TRAGui {
@@ -42,7 +41,7 @@ public class TRAGui {
     private static final Font bodyFont = new Font("Calibri", Font.PLAIN, 14);
     private static final Font bodyBoldFont = new Font("Calibri", Font.BOLD, 14);
 
-    // font calibri does not have star symbols, so the star ratings uses another font with star symbols
+    // font calibri doesn't have star symbols, so the star ratings uses another font with star symbols
     private static final Font starFont = pickStarFont();
 
     private static final String[] readingStatusOptions = {
@@ -53,6 +52,8 @@ public class TRAGui {
     };
     private static final String noSummaryText = "There was no book summary provided.";
     private static final int idColumn = 0;
+    private static final int authorColumn = 2;
+    private static final int summaryColumn = 6;
     private static final int ratingColumn = 7;
 
     // to make texts centered and work with font calibri texts were moved a bit to compensate
@@ -74,7 +75,7 @@ public class TRAGui {
     private JButton sortLibraryButton;
     private JButton deleteLibraryButton;
 
-// ------------------------------------------------------------------------------------------ //
+    // ------------------------------------------------------
 
     public TRAGui() {
         library = new libraryDatabase();
@@ -89,7 +90,6 @@ public class TRAGui {
                 library.disconnect();
             }
         });
-
         menuFrame.setLayout(new BorderLayout());
         menuFrame.getContentPane().setBackground(creamWhite);
 
@@ -130,7 +130,7 @@ public class TRAGui {
         menuFrame.setVisible(true);
     }
 
-// ------------------------------------------------------------------------------------------ //
+    // ------------------------------------------------------
 
     /*
      * method: buildHeader
@@ -319,7 +319,16 @@ public class TRAGui {
         };
 
         digitalLibraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        digitalLibraryTable.setAutoCreateRowSorter(true);
+        // clicking a column name sorts the table, only title, genre, sub-genre, reading status and rating can be sorted
+        TableRowSorter<DefaultTableModel> tableSorter = new TableRowSorter<>(digitalLibraryModel);
+        tableSorter.setSortable(idColumn, false);
+        tableSorter.setSortable(authorColumn, false);
+        tableSorter.setSortable(summaryColumn, false);
+
+        // ratings are sorted by their number instead of the star symbols
+        tableSorter.setComparator(ratingColumn, (java.util.Comparator<String>) (rating1, rating2) ->
+                Double.compare(ratingNumber(rating1), ratingNumber(rating2)));
+        digitalLibraryTable.setRowSorter(tableSorter);
         digitalLibraryTable.setRowHeight(28);
         digitalLibraryTable.setFont(bodyFont);
         digitalLibraryTable.setForeground(inkBrown);
@@ -451,7 +460,7 @@ public class TRAGui {
      * method: fixColumnWidth
      * parameters: int column, Font font, String... widestTexts
      * return: VOID
-     * purpose: locks a column to the width of its widest text so it does not take space from the
+     * purpose: locks a column to the width of its widest text so it doesn't take space from the
      *          other columns (used for the ID and Rating columns)
      */
 
@@ -820,14 +829,14 @@ public class TRAGui {
      * method: showDatabaseError
      * parameters: String action, SQLException ex
      * return: VOID
-     * purpose: tells the user what could not be done and why, with a clearer message when the
-     *          MySQL driver has not been added to the project
+     * purpose: tells the user what couldn't be done and why, with a clearer message when the
+     *          MySQL driver hasn't been added to the project
      */
 
     private void showDatabaseError(String action, SQLException ex) {
         String reason = ex.getMessage();
         if (reason != null && reason.contains("No suitable driver")) {
-            reason = "The MySQL driver (MySQL Connector/J) has not been added to the project.";
+            reason = "The MySQL driver (MySQL Connector/J) hasn't been added to the project.";
         }
         showUpdate("Database Error", "Could not " + action + ".\n" + reason);
     }
@@ -901,7 +910,7 @@ public class TRAGui {
      * parameters: Object message, String title, int optionType, Object[] buttons, boolean resizable
      * return: Object
      * purpose: every pop up goes through here so they all look the same, returns the button that
-     *          was clicked (null if the pop up was closed with the X)
+     *          was clicked (null if the pop up was closed with the ✕)
      */
 
     private Object showPopup(Object message, String title, int optionType, Object[] buttons, boolean resizable) {
@@ -966,7 +975,7 @@ public class TRAGui {
      * method: centredInsets
      * parameters: JComponent component, Insets normal
      * return: Insets
-     * purpose: calibri sits too high on windows and too low on other computers,this measures
+     * purpose: calibri sits too high on windows and too low on other computers, so this measures
      *          the letters and moves the padding around until the text is in the middle
      *          (used by the text boxes and dropdown rows)
      */
@@ -1017,7 +1026,7 @@ public class TRAGui {
         return font.deriveFont(java.awt.geom.AffineTransform.getTranslateInstance(0, shift));
     }
 
-    // smallest space the library name gets to the left of the buttons (window can not shrink past this)
+    // smallest space the library name gets to the left of the buttons (window can't shrink past this)
     private static final int libraryNameWidth = 200;
 
     // the name before it gets wrapped
@@ -1034,7 +1043,7 @@ public class TRAGui {
      * parameters: String text
      * return: VOID
      * purpose: changes the library name shown in the toolbar, wrapping it to the space it actually
-     *          has so the toolbar does not jump to two lines
+     *          has so the toolbar doesn't jump to two lines for a second
      */
 
     private void setLibraryNameText(String text) {
@@ -1053,7 +1062,7 @@ public class TRAGui {
      * parameters: int width
      * return: VOID
      * purpose: fits the library name into the width, only starting a new line when the next word
-     *          does not fit (each word is measured with the real font)
+     *          doesn't fit (each word is measured with the real font)
      */
 
     private void wrapLibraryName(int width) {
@@ -1088,7 +1097,7 @@ public class TRAGui {
      * method: htmlSafe
      * parameters: String text
      * return: String
-     * purpose: returns the text with characters like & and < changed so they are not read as html
+     * purpose: returns the text with characters like & and < changed so they aren't read as html
      */
 
     private static String htmlSafe(String text) {
@@ -1122,11 +1131,28 @@ public class TRAGui {
     }
 
     /*
+     * method: ratingNumber
+     * parameters: String ratingText
+     * return: double
+     * purpose: gets the number back out of the rating text, for example "(4.5 out of 5 stars)" gives 4.5
+     *          and "No rating" gives 0, used for sorting the rating column
+     */
+
+    private static double ratingNumber(String ratingText) {
+        int numberStart = ratingText.indexOf('(');
+        int numberEnd = ratingText.indexOf(" out of");
+        if (numberStart == -1 || numberEnd == -1) {
+            return 0.0;
+        }
+        return Double.parseDouble(ratingText.substring(numberStart + 1, numberEnd));
+    }
+
+    /*
      * method: pickStarFont
      * parameters: NONE
      * return: Font
      * purpose: returns the first installed font that has all three star symbols (★ ⯪ ☆),
-     *          since calibri does not have them
+     *          since calibri doesn't have them
      */
 
     private static Font pickStarFont() {
@@ -1161,7 +1187,7 @@ public class TRAGui {
      * parameters: int size
      * return: ImageIcon
      * purpose: loads the pixel book image for the window icon and keeps the pixels sharp when
-     *          it's resized, returns NULL if bookImage.png is not found
+     *          it's resized, returns NULL if bookImage.png isn't found
      */
 
     private ImageIcon loadPixelImage(int size) {
@@ -1211,7 +1237,7 @@ public class TRAGui {
      * parameters: NONE
      * return: VOID
      * purpose: shows "1 book" or "5 books" under the table, blank when no library is open
-     *          (but still takes up its space so the table does not move)
+     *          (but still takes up its space so the table doesn't move)
      */
 
     private void updateBookCount() {
@@ -1293,7 +1319,7 @@ public class TRAGui {
                 summaryArea.setText(existingBook.getBookSummary());
                 double existingRating = existingBook.getBookRating();
 
-                // older ratings that are not a half step (like 4.3) get added so they are not lost
+                // older ratings that aren't a half step (like 4.3) get added so they aren't lost
                 if (((DefaultComboBoxModel<Double>) ratingBox.getModel()).getIndexOf(existingRating) == -1) {
                     ratingBox.addItem(existingRating);
                 }
@@ -1429,7 +1455,7 @@ public class TRAGui {
             UIManager.setLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel());
         } catch (UnsupportedLookAndFeelException ex) {
 
-            // keeps the default look if the pink theme can not be used
+            // keeps the default look if the pink theme can't be used
         }
 
         // pop ups draw their own title bar so it can be pink instead of the system's grey one
@@ -1438,7 +1464,7 @@ public class TRAGui {
         // pop up titles: calibri moved down by the measured amount so it's centred in the title bar
         UIManager.put("InternalFrame.titleFont", centredFont(bodyBoldFont));
 
-        // clear, bold X
+        // clear, bold ✕
         UIManager.put("InternalFrame.closeIcon", new closeIcon());
 
         // title bar stays the same pink and berry text when you click away from a pop up
@@ -1555,7 +1581,7 @@ public class TRAGui {
          * parameters: Graphics g, JComponent component
          * return: VOID
          * purpose: draws the rounded background and outline (lighter when hovered, deeper when clicked),
-         *          the X in pop up title bars gets the same hover colours but no rounded box
+         *          the ✕ in pop up title bars gets the same hover colours but no rounded box
          */
 
         @Override
@@ -1563,8 +1589,8 @@ public class TRAGui {
             AbstractButton button = (AbstractButton) component;
             ButtonModel buttonState = button.getModel();
 
-            // the X button in a pop up's title bar: no rounded box, but the same hover and click
-            // colours as the other buttons, filled inside the X's square
+            // the ✕ button in a pop up's title bar: no rounded box, but the same hover and click
+            // colours as the other buttons, filled inside the ✕'s square
             if (button.getParent() != null && button.getParent().getClass().getName().contains("TitlePane")) {
                 if (buttonState.isPressed() || buttonState.isRollover()) {
                     int iconX = (button.getWidth() - closeIcon.iconSize) / 2;
@@ -1574,7 +1600,7 @@ public class TRAGui {
                 }
                 button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-                // draws the X and its square on top
+                // draws the ✕ and its square on top
                 super.paint(g, component);
                 return;
             }
@@ -1705,7 +1731,7 @@ public class TRAGui {
 
     /*
      * class: closeIcon
-     * the X in pop up title bars: a bold berry pink cross that's easy to see
+     * the ✕ in pop up title bars: a bold berry pink cross that's easy to see
      */
 
     public static class closeIcon implements Icon {
@@ -1715,7 +1741,7 @@ public class TRAGui {
          * method: paintIcon
          * parameters: Component component, Graphics g, int x, int y
          * return: VOID
-         * purpose: draws the X and the little square outline around it
+         * purpose: draws the ✕ and the little square outline around it
          */
 
         @Override
