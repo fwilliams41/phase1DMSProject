@@ -19,7 +19,6 @@ public class digitalLibrary {
 
     public int displayLibraries() {
         // finding and listing digital library files using universal user.dir and searching user's directory
-        String digitalLibraryPath = System.getProperty("user.dir");
         java.io.File dir = new java.io.File(System.getProperty("user.dir"));
         java.io.File[] existingFiles = dir.listFiles((d, name) -> name.endsWith(".txt"));
 

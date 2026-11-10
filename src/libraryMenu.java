@@ -1,5 +1,3 @@
-import javax.management.InstanceNotFoundException;
-import java.net.UnknownServiceException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -364,7 +362,8 @@ public class libraryMenu {
                                             userInput.nextLine();
 
                                             if (newReadingStatusChoice >= 1 && newReadingStatusChoice <= 4) {
-                                                validNewReadingStatus = true; // Breaks out of the validation loop
+                                                // valid status leaves the loop
+                                                validNewReadingStatus = true;
                                             } else {
                                                 System.out.println(flair.BOLD_RED + "Please enter a valid option." + flair.RESET);
                                             }
@@ -374,7 +373,7 @@ public class libraryMenu {
                                         }
                                     }
 
-                                    // Map the number selection to the exact abbreviation strings expected by your class
+                                    // changes the number into the reading status
                                     String newReadingStatusText = "";
                                     switch (newReadingStatusChoice) {
                                         case 1:
@@ -577,7 +576,7 @@ public class libraryMenu {
                                 System.out.println(openFile.replace(".txt", "") + " could not be deleted, it does not exist.\n");
                             }
                     } catch (IOException e) {
-                        // Updated to report the actual failure reason (e.g., file lock or permissions)
+                        // the file could not be deleted
                         System.out.println(openFile + " could not be deleted.\n");
                     }
                 } else {
